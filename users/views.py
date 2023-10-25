@@ -10,7 +10,11 @@ from users.serializers import (
     UserInfoSerializer,
     ChangePasswordSerializer,
 )
-from .models import User
+import requests
+import base64
+import io
+from django.core.files.images import ImageFile
+from .models import User,Temp_Profile_Image
 
 # Create your views here.
 class UserView(APIView):
@@ -26,6 +30,7 @@ class UserView(APIView):
         serializer = UserCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            print(serializer.data['profile_img'])
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -64,3 +69,35 @@ class ChangePasswordView(UpdateAPIView):
     queryset = User.objects.all()
     permission_classes = (IsAuthenticated,)
     serializer_class = ChangePasswordSerializer
+    
+    
+class ChangeProfileImageView(APIView):
+    def get(self,request):
+        target=request.data['target']
+        image_route=request.FILES['image_route']
+        url = "https://www.ailabapi.com/api/portrait/effects/face-attribute-editing"
+        #print(target)
+        #print(image_route)
+        payload={'action_type': 'V2_AGE',
+            'target':target,
+            'quality_control': 'NONE',
+            #'face_location': ''
+        }
+        files=[
+            ('image',('file',image_route,'application/octet-stream'))
+        ]
+        headers = {
+            'ailabapi-api-key': 'your api key'
+        }
+        response = requests.request("POST", url, headers=headers, data=payload, files=files)
+        #print(response.text)
+        data=response.json()
+        image_data = data['result']['image']
+        imgdata = base64.b64decode(str(image_data))
+        image = ImageFile(io.BytesIO(imgdata), name='foo.jpg')  # << the answer!
+        changed_image = Temp_Profile_Image.objects.create(image_file=image)
+        changed_image_url=changed_image.image_file.url
+        # changed_image_path=changed_image.image_file.path
+        print(changed_image_url)
+        # print(changed_image_path)
+        return Response({"changed_image_url": changed_image_url},status=status.HTTP_200_OK)

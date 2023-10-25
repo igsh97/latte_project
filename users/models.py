@@ -53,3 +53,7 @@ class User(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
+    
+    
+class Temp_Profile_Image(models.Model):
+    image_file=models.FileField('temp_profile_image',upload_to='temp_images')

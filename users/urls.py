@@ -13,4 +13,5 @@ urlpatterns = [
     path('<int:user_id>/',views.UserView.as_view(),name='Profile_view'),
     path('api/auth/logout/',TokenBlacklistView.as_view(),name='token_blacklist'),
     path('change_password/<int:pk>/', views.ChangePasswordView.as_view(), name='auth_change_password'),
+    path('change_profile_image/',views.ChangeProfileImageView.as_view(),name='change_profile_image'),
 ]

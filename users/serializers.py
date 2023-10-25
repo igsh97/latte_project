@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from users.models import User
+from users.models import User,Temp_Profile_Image
 from django.contrib.auth import get_user_model
 
 class UserInfoSerializer(serializers.ModelSerializer):
@@ -62,3 +62,6 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+    
+    
+
