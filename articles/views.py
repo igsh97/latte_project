@@ -41,10 +41,6 @@ class ArticleDetailView(APIView):
         else:
             return Response(serializer.errors, status=400)
 
-
-
-    
-
     def delete(self, request, article_id):
         if not request.user.is_authenticated:
             return Response(status=401)
