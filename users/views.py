@@ -35,7 +35,7 @@ class UserView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request, format=None):
+    def put(self, request,user_id,format=None):
         if not request.user.is_authenticated:
             Response({"detail": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
         serializer = UserCreateSerializer(request.user, data=request.data, partial=True)
@@ -87,7 +87,7 @@ class ChangeProfileImageView(APIView):
             ('image',('file',image_route,'application/octet-stream'))
         ]
         headers = {
-            'ailabapi-api-key': 'your api key'
+            'ailabapi-api-key': 'O4FWH470wlnyLX5QMEeIuYs1sV02JOjfAmt6AzHkDNbidb9SWPIBBK9DRTf8LGuc'
         }
         response = requests.request("POST", url, headers=headers, data=payload, files=files)
         #print(response.text)
