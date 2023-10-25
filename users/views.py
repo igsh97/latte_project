@@ -51,6 +51,12 @@ class UserView(APIView):
             return Response({"message": "회원 탈퇴 완료."}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"detail": "비밀번호 불일치."}, status=status.HTTP_403_FORBIDDEN)
+
+class UserListView(APIView):
+    def get(self, request):
+        user = User.objects.all()
+        serializer = UserInfoSerializer(user, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
         
 
 class ChangePasswordView(UpdateAPIView):
