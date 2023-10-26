@@ -87,7 +87,7 @@ class ChangeProfileImageView(APIView):
             ('image',('file',image_route,'application/octet-stream'))
         ]
         headers = {
-            'ailabapi-api-key': 'your api key'
+            'ailabapi-api-key': 'O4FWH470wlnyLX5QMEeIuYs1sV02JOjfAmt6AzHkDNbidb9SWPIBBK9DRTf8LGuc'
         }
         response = requests.request("POST", url, headers=headers, data=payload, files=files)
         #print(response.text)
@@ -99,7 +99,7 @@ class ChangeProfileImageView(APIView):
             image = ImageFile(io.BytesIO(imgdata), name='foo.jpg')  # << the answer!
             changed_image = Temp_Profile_Image.objects.create(image_file=image)
             changed_image_url=changed_image.image_file.url
-            return Response({"changed_image_url": changed_image_url, "changed_image_id": changed_image.id},status=status.HTTP_200_OK)
+            return Response({"changed_image_url": changed_image_url, "changed_image_id": changed_image.id,"image_data":image_data},status=status.HTTP_200_OK)
         else:
             return Response({"error_msg": data["error_msg"]},status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     
