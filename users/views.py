@@ -99,6 +99,7 @@ class ChangeProfileImageView(APIView):
             image = ImageFile(io.BytesIO(imgdata), name='foo.jpg')  # << the answer!
             changed_image = Temp_Profile_Image.objects.create(image_file=image)
             changed_image_url=changed_image.image_file.url
+            print(changed_image_url)
             return Response({"changed_image_url": changed_image_url, "changed_image_id": changed_image.id,"image_data":image_data},status=status.HTTP_200_OK)
         else:
             return Response({"error_msg": data["error_msg"]},status=status.HTTP_422_UNPROCESSABLE_ENTITY)
