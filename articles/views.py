@@ -6,6 +6,14 @@ from rest_framework import status
 from articles.models import Article, Comment
 from articles.serializers import ArticleSerializer, CommentCreateSerializer, CommentSerializer
 
+import requests
+import json
+import urllib
+from PIL import Image
+
+
+
+
 class ArticleView(APIView):
     def get(self, request):
         articles = Article.objects.all()
@@ -86,3 +94,59 @@ class CommentDetailView(APIView):
         
         comment.delete()
         return Response({"삭제되었습니다."}, status=204)
+    
+# 이미지 생성
+class GenerateImage(APIView):
+    def post(self, request):
+
+        
+        REST_API_KEY = ''
+
+        prompt = request.data.get('prompt', 'dog by gogh')
+        negative_prompt = request.data.get('negative_prompt', 'ugly face,low quality,low contrast,draft,amateur,cut off,cropped,frame')
+       
+        response = self.generate_image(prompt, negative_prompt, REST_API_KEY)
+
+        
+        images = response.get("images", [])
+
+        if not images:
+            return Response({'error': 'Image generation failed'}, status=status.HTTP_400_BAD_REQUEST)
+
+        
+        image_url = images[0].get("image")
+
+        
+        image_response = self.fetch_image(image_url)
+        return image_response
+
+    def generate_image(self, prompt, negative_prompt, api_key):
+        r = requests.post(
+            'https://api.kakaobrain.com/v2/inference/karlo/t2i',
+            json={
+                'prompt': prompt,
+                'negative_prompt': negative_prompt
+            },
+            headers={
+                'Authorization': f'KakaoAK {api_key}',
+                'Content-Type': 'application/json'
+            }
+        )
+
+        
+        response = json.loads(r.content)
+        return response
+
+    def fetch_image(self, image_url):
+       
+        image = Image.open(urllib.request.urlopen(image_url))
+        image.save('image_create.png', 'PNG') 
+
+        
+        image_response = Response()
+        image_response['Content-Type'] = 'image/png'
+        image_response['Content-Disposition'] = 'inline; filename=image.png'
+        image_response.content = image.tobytes()
+
+        return image_response
+        
