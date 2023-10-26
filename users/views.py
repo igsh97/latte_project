@@ -72,7 +72,7 @@ class ChangePasswordView(UpdateAPIView):
     
     
 class ChangeProfileImageView(APIView):
-    def get(self,request):
+    def post(self,request):
         target=request.data['target']
         image_route=request.FILES['image_route']
         url = "https://www.ailabapi.com/api/portrait/effects/face-attribute-editing"
