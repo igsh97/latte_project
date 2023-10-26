@@ -35,7 +35,7 @@ class UserView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request, format=None):
+    def put(self, request,user_id,format=None):
         if not request.user.is_authenticated:
             Response({"detail": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
         serializer = UserCreateSerializer(request.user, data=request.data, partial=True)
@@ -72,7 +72,7 @@ class ChangePasswordView(UpdateAPIView):
     
     
 class ChangeProfileImageView(APIView):
-    def get(self,request):
+    def post(self,request):
         target=request.data['target']
         image_route=request.FILES['image_route']
         url = "https://www.ailabapi.com/api/portrait/effects/face-attribute-editing"
