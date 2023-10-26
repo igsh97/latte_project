@@ -92,12 +92,14 @@ class ChangeProfileImageView(APIView):
         response = requests.request("POST", url, headers=headers, data=payload, files=files)
         #print(response.text)
         data=response.json()
-        image_data = data['result']['image']
-        imgdata = base64.b64decode(str(image_data))
-        image = ImageFile(io.BytesIO(imgdata), name='foo.jpg')  # << the answer!
-        changed_image = Temp_Profile_Image.objects.create(image_file=image)
-        changed_image_url=changed_image.image_file.url
-        # changed_image_path=changed_image.image_file.path
-        print(changed_image_url)
-        # print(changed_image_path)
-        return Response({"changed_image_url": changed_image_url},status=status.HTTP_200_OK)
+
+        if "result" in data:
+            image_data = data['result']['image']
+            imgdata = base64.b64decode(str(image_data))
+            image = ImageFile(io.BytesIO(imgdata), name='foo.jpg')  # << the answer!
+            changed_image = Temp_Profile_Image.objects.create(image_file=image)
+            changed_image_url=changed_image.image_file.url
+            return Response({"changed_image_url": changed_image_url, "changed_image_id": changed_image.id},status=status.HTTP_200_OK)
+        else:
+            return Response({"error_msg": data["error_msg"]},status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    
