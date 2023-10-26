@@ -100,7 +100,7 @@ class GenerateImage(APIView):
     def post(self, request):
 
         
-        REST_API_KEY = ''
+        REST_API_KEY = '893e71a3d65fcf61c29ffc9af35f4e42'
 
         prompt = request.data.get('prompt', 'dog by gogh')
         negative_prompt = request.data.get('negative_prompt', 'ugly face,low quality,low contrast,draft,amateur,cut off,cropped,frame')
