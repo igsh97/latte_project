@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from users.models import User
+from users.models import User,Temp_Profile_Image
 from django.contrib.auth import get_user_model
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ("username", "profile_img", "age")
+        fields = ("username", "profile_img", "age", "id")
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -62,3 +62,6 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+    
+    
+

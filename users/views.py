@@ -10,7 +10,11 @@ from users.serializers import (
     UserInfoSerializer,
     ChangePasswordSerializer,
 )
-from .models import User
+import requests
+import base64
+import io
+from django.core.files.images import ImageFile
+from .models import User,Temp_Profile_Image
 
 # Create your views here.
 class UserView(APIView):
@@ -26,11 +30,12 @@ class UserView(APIView):
         serializer = UserCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            print(serializer.data['profile_img'])
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request, format=None):
+    def put(self, request,user_id,format=None):
         if not request.user.is_authenticated:
             Response({"detail": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
         serializer = UserCreateSerializer(request.user, data=request.data, partial=True)
@@ -51,6 +56,12 @@ class UserView(APIView):
             return Response({"message": "회원 탈퇴 완료."}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"detail": "비밀번호 불일치."}, status=status.HTTP_403_FORBIDDEN)
+
+class UserListView(APIView):
+    def get(self, request):
+        user = User.objects.all()
+        serializer = UserInfoSerializer(user, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
         
 
 class ChangePasswordView(UpdateAPIView):
@@ -58,3 +69,37 @@ class ChangePasswordView(UpdateAPIView):
     queryset = User.objects.all()
     permission_classes = (IsAuthenticated,)
     serializer_class = ChangePasswordSerializer
+    
+    
+class ChangeProfileImageView(APIView):
+    def post(self,request):
+        target=request.data['target']
+        image_route=request.FILES['image_route']
+        url = "https://www.ailabapi.com/api/portrait/effects/face-attribute-editing"
+        #print(target)
+        #print(image_route)
+        payload={'action_type': 'V2_AGE',
+            'target':target,
+            'quality_control': 'NONE',
+            #'face_location': ''
+        }
+        files=[
+            ('image',('file',image_route,'application/octet-stream'))
+        ]
+        headers = {
+            'ailabapi-api-key': 'O4FWH470wlnyLX5QMEeIuYs1sV02JOjfAmt6AzHkDNbidb9SWPIBBK9DRTf8LGuc'
+        }
+        response = requests.request("POST", url, headers=headers, data=payload, files=files)
+        #print(response.text)
+        data=response.json()
+
+        if "result" in data:
+            image_data = data['result']['image']
+            imgdata = base64.b64decode(str(image_data))
+            image = ImageFile(io.BytesIO(imgdata), name='foo.jpg')  # << the answer!
+            changed_image = Temp_Profile_Image.objects.create(image_file=image)
+            changed_image_url=changed_image.image_file.url
+            return Response({"changed_image_url": changed_image_url, "changed_image_id": changed_image.id,"image_data":image_data},status=status.HTTP_200_OK)
+        else:
+            return Response({"error_msg": data["error_msg"]},status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    
