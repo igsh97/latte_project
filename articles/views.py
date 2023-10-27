@@ -140,8 +140,8 @@ class GenerateImage(APIView):
     def fetch_image(self, image_url):
        
         image = Image.open(urllib.request.urlopen(image_url))
-        save_path = './media/image/generate_image.png'  # 저장하려는 경로로 변경
-        image.save(save_path, 'PNG') 
+        # save_path = './media/image/generate_image.png'  # 저장하려는 경로로 변경
+        # image.save(save_path, 'PNG') 
 
         
         image_response = Response()
