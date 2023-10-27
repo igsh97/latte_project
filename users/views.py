@@ -87,7 +87,7 @@ class ChangeProfileImageView(APIView):
             ('image',('file',image_route,'application/octet-stream'))
         ]
         headers = {
-            'ailabapi-api-key': 'O4FWH470wlnyLX5QMEeIuYs1sV02JOjfAmt6AzHkDNbidb9SWPIBBK9DRTf8LGuc'
+            'ailabapi-api-key': 'your api key'
         }
         response = requests.request("POST", url, headers=headers, data=payload, files=files)
         #print(response.text)
