@@ -143,9 +143,9 @@ AUTH_USER_MODEL='users.User'
 #if DEBUG:
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage' # Local, 즉 DEBUG=True 일 경우 pipeline 사용
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage' # Local, 즉 DEBUG=True 일 경우 pipeline 사용
 
-MEDIA_URL = '/media/'
+MEDIA_URL = '/uploads/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # else:
@@ -166,7 +166,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 #     MEDIA_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
 #     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
     
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=720),
